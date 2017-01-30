@@ -1,0 +1,8 @@
+{
+  "name": "alipay",
+  "version": "1.0.0",
+  "description": "alipay face to face sdk for nodejs",
+  "main": "index.js",
+  "author": "Lsong <song940@gmail.com>",
+  "license": "MIT"
+}
