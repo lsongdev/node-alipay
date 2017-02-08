@@ -11,25 +11,20 @@ function Alipay(config){
   this.config = config;
   return this;
 };
+
 /**
- * [create description]
- * @param  {[type]} params [description]
- * @return {[type]}        [description]
- *
- * @docs https://doc.open.alipay.com/doc2/apiDetail.htm?spm=a219a.7629065.0.0.PlTwKb&apiId=862&docType=4
+ * [merge description]
+ * @param  {[type]} o1 [description]
+ * @param  {[type]} o2 [description]
+ * @return {[type]}    [description]
  */
-Alipay.prototype.create = function(tradeNo, subject, totalAmount, timeout){
-  var params = {};
-  if(typeof tradeNo === 'object'){
-    params = tradeNo;
-  }else{
-    params.out_trade_no    = tradeNo;
-    params.subject         = subject;
-    params.total_amount    = totalAmount;
-    params.timeout_express = timeout;
-  }
-  return this.execute('alipay.trade.precreate', params);
+Alipay.merge = function(o1, o2){
+  var obj = {};
+  for(var k in o1) obj[k] = o1[k];
+  for(var k in o2) obj[k] = o2[k];
+  return obj;
 };
+
 /**
  * [timestamp description]
  * @param  {[type]} date [description]
@@ -78,6 +73,15 @@ Alipay.prototype.createSignatureWithRSA = function(content, signType, charset){
  * @return {[type]}         [description]
  */
 Alipay.prototype.verify = function(params, sign, signType, charset){
+  charset  = charset  || 'utf8';
+  if(typeof sign === 'undefined' && params.sign && params.sign_type){
+    sign     = params.sign;
+    signType = params.sign_type;
+    delete params.sign;
+    delete params.sign_type;
+  }
+  if(typeof sign     === 'undefined') throw new TypeError('sign must be string');
+  if(typeof signType === 'undefined') throw new TypeError('signType must be string');
   var content = JSON.stringify(params).replace(/\//g, "\\/");
   var rsa = crypto.createVerify(({
     RSA : 'RSA-SHA1',
@@ -122,18 +126,6 @@ Alipay.prototype.createBaseParams = function(method, params){
   });
   return obj;
 };
-/**
- * [merge description]
- * @param  {[type]} o1 [description]
- * @param  {[type]} o2 [description]
- * @return {[type]}    [description]
- */
-Alipay.merge = function(o1, o2){
-  var obj = {};
-  for(var k in o1) obj[k] = o1[k];
-  for(var k in o2) obj[k] = o2[k];
-  return obj;
-};
 
 /**
  * [execute description]
@@ -164,13 +156,50 @@ Alipay.prototype.execute =  function(method, params){
         if(self.verify(result, response.sign, base.sign_type, base.charset)){
           accept(result);
         }else{
-          reject(new Error('verify signature faile'));
+          reject(new Error('verify signature faile', response));
         }
       });
     });
     req.setHeader('content-type', 'application/x-www-form-urlencoded')
     req.end(qs.stringify(params));
   }.bind(this));
+};
+
+/**
+ * [create description]
+ * @param  {[type]} params [description]
+ * @return {[type]}        [description]
+ *
+ * @docs https://doc.open.alipay.com/doc2/apiDetail.htm?spm=a219a.7629065.0.0.PlTwKb&apiId=862&docType=4
+ */
+Alipay.prototype.create = function(tradeNo, subject, totalAmount, timeout){
+  var params = {};
+  if(typeof tradeNo === 'object'){
+    params = tradeNo;
+  }else{
+    params.out_trade_no    = tradeNo;
+    params.subject         = subject;
+    params.total_amount    = totalAmount;
+    params.timeout_express = timeout;
+  }
+  return this.execute('alipay.trade.precreate', params);
+};
+/**
+ * [query description]
+ * @param  {[type]} params [description]
+ * @return {[type]}        [description]
+ */
+Alipay.prototype.query = function(params){
+  return this.execute('alipay.trade.query', params);
+};
+
+/**
+ * [refund description]
+ * @param  {[type]} params [description]
+ * @return {[type]}        [description]
+ */
+Alipay.prototype.refund = function(params){
+  return this.execute('alipay.trade.refund', params);
 };
 
 module.exports = Alipay;
