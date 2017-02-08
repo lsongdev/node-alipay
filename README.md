@@ -21,7 +21,7 @@ const alipay = new Alipay({
   alipayPublicKey : fs.readFileSync(path.join(__dirname, 'alipay.pub')),
 });
 
-alipay.create({
+alipay.precreate({
   subject         : 'Example'
 , out_trade_no    : '1486524664511'
 , total_amount    : '0.1'

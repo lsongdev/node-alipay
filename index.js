@@ -127,6 +127,14 @@ Alipay.prototype.createBaseParams = function(method, params){
   return obj;
 };
 
+Alipay.Error = function(err){
+  var error = new Error(err.sub_msg, err.sub_code);
+  error.type = err.msg;
+  error.code = err.code;
+  error.origin = err;
+  return error;
+};
+
 /**
  * [execute description]
  * @param  {[type]} method [description]
@@ -150,14 +158,18 @@ Alipay.prototype.execute =  function(method, params){
       .on('data', function(chunk){
         buffer += chunk;
       }).on('end', function(){
-        var rootNodeName = method.replace(/\./g, "_") + "_response";
         var response = JSON.parse(buffer);
+        var rootNodeName = method.replace(/\./g, "_") + "_response";
         var result = response[ rootNodeName ];
+        if(typeof response.sign === 'undefined'){
+          return reject(new Alipay.Error(result));
+        }
         if(self.verify(result, response.sign, base.sign_type, base.charset)){
           accept(result);
         }else{
           reject(new Error('verify signature faile', response));
         }
+        
       });
     });
     req.setHeader('content-type', 'application/x-www-form-urlencoded')
@@ -172,7 +184,7 @@ Alipay.prototype.execute =  function(method, params){
  *
  * @docs https://doc.open.alipay.com/doc2/apiDetail.htm?spm=a219a.7629065.0.0.PlTwKb&apiId=862&docType=4
  */
-Alipay.prototype.create = function(tradeNo, subject, totalAmount, timeout){
+Alipay.prototype.precreate = function(tradeNo, subject, totalAmount, timeout){
   var params = {};
   if(typeof tradeNo === 'object'){
     params = tradeNo;
@@ -191,6 +203,18 @@ Alipay.prototype.create = function(tradeNo, subject, totalAmount, timeout){
  */
 Alipay.prototype.query = function(params){
   return this.execute('alipay.trade.query', params);
+};
+
+Alipay.prototype.create = function(params){
+  return this.execute('alipay.trade.create', params);
+};
+
+Alipay.prototype.pay = function(params){
+  return this.execute('alipay.trade.pay', params);
+};
+
+Alipay.prototype.cancel = function(params){
+  return this.execute('alipay.trade.cancel', params);
 };
 
 /**
