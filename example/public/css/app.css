@@ -1,0 +1,13 @@
+
+.content{
+  width: 300px;
+  margin: auto;
+  text-align: center;
+}
+
+img, input{
+  width: 100%;
+  display: block;
+  text-align: center;
+}
+

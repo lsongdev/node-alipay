@@ -21,24 +21,18 @@ describe('Alipay', function() {
     }, 'PcvoeswLCqVevtK86zoCsOekGImqKCnGdcnZ7KarmIj1jfitHg8f1tveIsFp2WeSDxGDLKFv3xA/9TrQz0e1K257aP87Ntzp0/FWiyZGJpfcukNHMOhPFjdn7M6g3oNICbB3PRfh/FZ3d8S4tXDP8gQX49ZhGMpb+YwX8Cche7ad7k7Pg6okqt5atRjdQYhduN70i+lC+aJ8WtDcLpPHCNED+efdhnyAQB95efUxyNhZ0omWbCG48CddIT98dNeSuG/3hRrV13fY4/CMOe61P1DyrPkg+H25hpMOdWdsDf3B0z+Q2u30ubbmK/U8RUWczFlDXApVcLHj2AZzAPDEpg==', 'RSA2'));
   });
   
-  it('alipay#precreate', function(done){
+  it('alipay#precreate', function(){
     
-    alipay.precreate({
+    return alipay.precreate({
       subject         : 'Example'
     , out_trade_no    : '1486524664511'
     , total_amount    : '0.1'
     , timeout_express : '10m'
     }).then(function(res){
-      var err = null;
-      try{
         assert.ok(res.qr_code);
         assert.equal(res.out_trade_no, '1486524664511');
         assert.equal(res.code, 10000, res.msg);
-      }catch(e){
-        err = e;
-      };
-      done(err);
-    }, done);
+    });
     
   });
 

@@ -1,0 +1,10 @@
+extends layout.jade
+
+block content
+  h2 create order
+  form(method="post")
+    input(name="out_trade_no", placeholder="out_trade_no", value="#{+new Date}")
+    input(name="subject", placeholder="subject", value="Example")
+    input(name="total_amount", placeholder="total_amount", value="0.01")
+    input(name="timeout_express", placeholder="timeout_express", value="10m")
+    button(type="submit") create

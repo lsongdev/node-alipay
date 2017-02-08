@@ -21,6 +21,14 @@
     "test": "mocha"
   },
   "dependencies": {
+    "jade": "^1.11.0",
+    "kelp": "^1.0.5",
+    "kelp-body": "^1.2.2",
+    "kelp-logger": "^1.1.0",
+    "kelp-render": "^1.0.1",
+    "kelp-route": "^2.0.0",
+    "kelp-send": "^1.0.3",
+    "kelp-static": "^1.0.1",
     "mocha": "*"
   }
 }

@@ -8,7 +8,12 @@ const crypto = require("crypto");
  * @param {[type]} config [description]
  */
 function Alipay(config){
-  this.config = config;
+  var defaults = {
+    gateway: 'https://openapi.alipay.com/gateway.do'
+  };
+  for(var k in config)
+    defaults[ k ] = config[ k ];
+  this.config = defaults;
   return this;
 };
 

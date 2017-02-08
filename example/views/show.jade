@@ -1,0 +1,7 @@
+
+extends layout.jade
+
+block content
+  h2 scan qrcode via alipay
+  img(src="https://api.lsong.org/qr?text=#{qr_code}")
+  a(href="/") back
