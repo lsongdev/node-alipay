@@ -1,4 +1,4 @@
-## alipay ![alipay@1.0.0](https://img.shields.io/npm/v/alipay.svg)
+## alipay [![npm version](https://img.shields.io/npm/v/alipay2.svg?style=flat)](https://www.npmjs.com/package/alipay2)
 
 > alipay sdk for nodejs
 
