@@ -20,7 +20,7 @@
   "scripts": {
     "test": "mocha"
   },
-  "dependencies": {
+  "devDependencies": {
     "jade": "^1.11.0",
     "kelp": "^1.0.5",
     "kelp-body": "^1.2.2",
