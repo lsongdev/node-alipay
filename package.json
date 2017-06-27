@@ -1,6 +1,6 @@
 {
   "name": "alipay2",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "alipay sdk for node.js",
   "main": "index.js",
   "author": "Lsong <song940@gmail.com>",
