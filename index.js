@@ -1,5 +1,5 @@
 const qs     = require('querystring')
-const url    = require('url');
+const URI    = require('url');
 const https  = require('https');
 const crypto = require("crypto");
 
@@ -8,6 +8,9 @@ const crypto = require("crypto");
  * @param {[type]} config [description]
  */
 function Alipay(config){
+  if(!(this instanceof Alipay)){
+    return new Alipay(config);
+  }
   var defaults = {
     gateway: 'https://openapi.alipay.com/gateway.do'
   };
@@ -15,6 +18,25 @@ function Alipay(config){
     defaults[ k ] = config[ k ];
   this.config = defaults;
   return this;
+};
+/**
+ * [TYPES description]
+ * @type {Object}
+ */
+Alipay.TYPES = {
+  RSA : 'RSA-SHA1',
+  RSA2: 'RSA-SHA256'
+};
+/**
+ * [Error description]
+ * @param {[type]} err [description]
+ */
+Alipay.Error = function(err){
+  var error = new Error(err.sub_msg, err.sub_code);
+  error.type = err.msg;
+  error.code = err.code;
+  error.origin = err;
+  return error;
 };
 
 /**
@@ -63,10 +85,7 @@ Alipay.timestamp = function(date){
 Alipay.prototype.createSignatureWithRSA = function(content, signType, charset){
   signType = signType || 'RSA2';
   charset  = charset  || 'utf8';
-  var rsa = crypto.createSign(({
-    RSA : 'RSA-SHA1',
-    RSA2: 'RSA-SHA256'
-  })[ signType ]);
+  var rsa = crypto.createSign(Alipay.TYPES[ signType ]);
   rsa.update(content, charset);
   return rsa.sign(this.config.appKey, 'base64');
 };
@@ -78,7 +97,7 @@ Alipay.prototype.createSignatureWithRSA = function(content, signType, charset){
  * @return {[type]}         [description]
  */
 Alipay.prototype.verify = function(params, sign, signType, charset){
-  charset  = charset  || 'utf8';
+  charset  = charset || 'utf8';
   if(typeof sign === 'undefined' && params.sign && params.sign_type){
     sign     = params.sign;
     signType = params.sign_type;
@@ -88,10 +107,7 @@ Alipay.prototype.verify = function(params, sign, signType, charset){
   if(typeof sign     === 'undefined') throw new TypeError('sign must be string');
   if(typeof signType === 'undefined') throw new TypeError('signType must be string');
   var content = JSON.stringify(params).replace(/\//g, "\\/");
-  var rsa = crypto.createVerify(({
-    RSA : 'RSA-SHA1',
-    RSA2: 'RSA-SHA256'
-  })[ signType ]);
+  var rsa = crypto.createVerify(Alipay.TYPES[ signType ]);
   rsa.update(content, charset);
   return rsa.verify(this.config.alipayPublicKey, sign, 'base64');
 };
@@ -119,25 +135,17 @@ Alipay.prototype.createBaseParams = function(method, params){
   var self = this, obj = {
       app_id     : this.config.appId
     , method     : method
+    , version    : '1.0'
     , format     : 'JSON'
-    , charset    : 'utf-8'
+    , charset    : 'utf8'
     , sign_type  : 'RSA2'
     , timestamp  : Alipay.timestamp()
-    , version    : '1.0'
     , notify_url : 'https://api.lsong.org'
   };
   Object.keys(obj).forEach(function(key){
     obj[ key ] = self.config[ key ] ||  obj[ key ];
   });
   return obj;
-};
-
-Alipay.Error = function(err){
-  var error = new Error(err.sub_msg, err.sub_code);
-  error.type = err.msg;
-  error.code = err.code;
-  error.origin = err;
-  return error;
 };
 
 /**
@@ -152,8 +160,10 @@ Alipay.prototype.execute =  function(method, params){
   params = { biz_content: JSON.stringify(params) };
   var content = Alipay.stringify(Alipay.merge(base, params));
   var signature  = this.createSignatureWithRSA(content, base.sign_type, base.charset);
-  var requestUrl = this.config.gateway + '?' + qs.stringify(base) + '&sign=' + encodeURIComponent(signature);
-  var options = url.parse(requestUrl);
+  var url = this.config.gateway;
+  url += '?' + qs.stringify(base);
+  url += '&sign=' + encodeURIComponent(signature);
+  var options = URI.parse(url);
   options.method = 'POST';
   return new Promise(function(accept, reject){
     var req = https.request(options, function(res){

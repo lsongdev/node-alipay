@@ -9,6 +9,7 @@ const route  = require('kelp-route');
 const serve  = require('kelp-static');
 const render = require('kelp-render');
 const logger = require('kelp-logger');
+
 const Alipay = require('..');
 
 const alipay = new Alipay({
@@ -19,20 +20,26 @@ const alipay = new Alipay({
 
 const app = kelp();
 
-app.use(render({
-  extension: 'pug' ,
-  templates: path.join(__dirname, 'views'),
-  compiler : function(content, filename){
-    return function(locals){
-      return pug.renderFile(filename, locals);
+app.use(
+  body,
+  send, 
+  logger,
+  serve(path.join(__dirname, 'public')),
+  render({
+    extension: 'pug',
+    templates: path.join(__dirname, 'views'),
+    compiler : function(content, filename){
+      return function(locals){
+        return pug.renderFile(filename, locals);
+      }
     }
-  }
-}));
+  })
+);
 
-app.use(logger, body, send, serve(path.join(__dirname, 'public')));
 app.use(route('get', '/', function(req, res){
   res.render('index');
 }));
+
 app.use(route('post', '/', function(req, res){
   alipay.precreate(req.body)
   .then(function(data){
@@ -44,5 +51,4 @@ app.use(function(req, res){
   res.send(404);
 });
 
-const server = http.createServer(app);
-server.listen(3000);
+http.createServer(app).listen(3000);
