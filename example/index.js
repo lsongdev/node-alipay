@@ -1,7 +1,7 @@
 const fs     = require('fs');
+const pug    = require('pug');
 const path   = require('path');
 const http   = require('http');
-const jade   = require('jade');
 const kelp   = require('kelp');
 const body   = require('kelp-body');
 const send   = require('kelp-send');
@@ -20,11 +20,11 @@ const alipay = new Alipay({
 const app = kelp();
 
 app.use(render({
-  extension: 'jade' ,
+  extension: 'pug' ,
   templates: path.join(__dirname, 'views'),
   compiler : function(content, filename){
     return function(locals){
-      return jade.renderFile(filename, locals);
+      return pug.renderFile(filename, locals);
     }
   }
 }));
