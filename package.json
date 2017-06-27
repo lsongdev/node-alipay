@@ -13,22 +13,10 @@
     "url": "https://github.com/song940/alipay/issues"
   },
   "homepage": "https://github.com/song940/alipay#readme",
-  "directories": {
-    "example": "example",
-    "test": "test"
-  },
   "scripts": {
     "test": "mocha"
   },
-  "dependencies": {
-    "kelp": "^1.0.5",
-    "kelp-body": "^1.4.1",
-    "kelp-logger": "^1.1.0",
-    "kelp-render": "^1.0.2",
-    "kelp-route": "^2.0.0",
-    "kelp-send": "^1.0.3",
-    "kelp-static": "^1.2.1",
-    "mocha": "*",
-    "pug": "2.x"
+  "devDependencies": {
+    "mocha": "*"
   }
 }
