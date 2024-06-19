@@ -173,6 +173,7 @@ Alipay.prototype.execute =  function(method, params){
       .on('data', function(chunk){
         buffer += chunk;
       }).on('end', function(){
+        console.log('end', buffer);
         var response = JSON.parse(buffer);
         var rootNodeName = method.replace(/\./g, "_") + "_response";
         var result = response[ rootNodeName ];

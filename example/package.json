@@ -7,7 +7,7 @@
     "kelp-body": "^1.4.1",
     "kelp-logger": "^1.1.0",
     "kelp-render": "^1.0.2",
-    "kelp-route": "^2.0.0",
+    "kelp-router": "*",
     "kelp-send": "^1.0.3",
     "kelp-static": "^1.2.1",
     "pug": "2.x"
